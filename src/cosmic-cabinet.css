@@ -1,0 +1,1193 @@
+/* Cosmic Frankenstein — 贴近实机录像的一体屏与机柜质感 */
+
+:root {
+  --font-vfd: "Share Tech Mono", "Orbitron", monospace;
+  --cabinet-purple: #1a1038;
+  --cabinet-blue: #0c2848;
+  --panel-blue: #0d47a1;
+  --panel-blue-deep: #01579b;
+  --grand-red: #c62828;
+  --grand-gold: #ffeb3b;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%, #0d2040 0%, transparent 55%),
+    #02040a;
+}
+
+#app {
+  max-width: 520px;
+}
+
+.cabinet.cosmic-cabinet {
+  padding: 12px 14px;
+  border-radius: 36px 36px 20px 20px;
+  background: linear-gradient(
+    165deg,
+    #1e6eb8 0%,
+    #0e4a82 18%,
+    #083060 45%,
+    #051830 100%
+  );
+  box-shadow:
+    0 0 0 2px #0a2848,
+    0 0 0 8px rgba(30, 120, 220, 0.2),
+    0 0 60px rgba(20, 100, 200, 0.35),
+    0 30px 80px rgba(0, 0, 0, 0.95);
+}
+
+.cabinet-bezel {
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px 28px 16px 16px;
+  border-width: 5px;
+  border-color: #1a8fd4;
+  background: #020610;
+  box-shadow: inset 0 0 80px rgba(0, 40, 100, 0.25);
+  min-height: 720px;
+}
+
+/* ── 墓地全景（顶屏下方整块区域） ── */
+.scenery-zone {
+  position: relative;
+  flex: 1;
+  min-height: 500px;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
+  background: #020408;
+}
+
+.scenery-graveyard {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url("/bg/graveyard-scenery.png?v=4") center 68% / cover no-repeat;
+  filter: saturate(1.12) brightness(0.98) contrast(1.06);
+}
+
+.scenery-mist {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 4, 14, 0.42) 0%,
+    rgba(0, 8, 22, 0.08) 22%,
+    transparent 48%
+  );
+  pointer-events: none;
+}
+
+.scenery-moon {
+  display: none;
+}
+
+.scenery-lightning {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(150, 220, 255, 0.25) 0%, transparent 45%);
+  animation: sceneryBolt 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sceneryBolt {
+  0%,
+  91%,
+  100% {
+    opacity: 0;
+  }
+  92%,
+  95% {
+    opacity: 0.85;
+  }
+}
+
+.scenery-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ── 奖金板区（透明，露出墓地） ── */
+.display-stack {
+  position: relative;
+  margin: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+}
+
+.display-stack::before {
+  display: none;
+}
+
+.scenery-zone::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.atmo-fog {
+  display: none;
+}
+
+.atmo-lightning {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 60%,
+    rgba(180, 230, 255, 0.15) 75%,
+    transparent 90%
+  );
+  filter: drop-shadow(0 0 20px #4fc3f7);
+  animation: atmoBolt 3.5s ease-in-out infinite;
+}
+
+.atmo-lightning--left {
+  left: -5%;
+  transform: skewX(-8deg);
+}
+
+.atmo-lightning--right {
+  right: -5%;
+  transform: scaleX(-1) skewX(-8deg);
+  animation-delay: 1.2s;
+}
+
+@keyframes atmoBolt {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+  }
+  90%,
+  94% {
+    opacity: 0.55;
+  }
+  92% {
+    opacity: 0.25;
+  }
+}
+
+/* ── Topper：顶屏抬高、加高（实机 27" 监视器） ── */
+.topper {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+  height: 268px;
+  min-height: 268px;
+  overflow: hidden;
+  border-bottom: 2px solid rgba(77, 208, 255, 0.35);
+  background: radial-gradient(
+    ellipse 110% 95% at 50% 42%,
+    #ff8f00 0%,
+    #e65100 22%,
+    #6d1b00 48%,
+    #1a0804 78%,
+    #050304 100%
+  );
+  border-radius: 18px 18px 0 0;
+  box-shadow: inset 0 -30px 50px rgba(255, 120, 0, 0.25);
+}
+
+.topper-fire-back {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 75% 60% at 50% 42%, rgba(255, 220, 100, 0.95) 0%, rgba(255, 120, 0, 0.55) 32%, transparent 68%),
+    radial-gradient(ellipse 100% 45% at 50% 95%, rgba(255, 90, 0, 0.7) 0%, transparent 55%);
+  animation: topperFirePulse 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes topperFirePulse {
+  50% {
+    opacity: 0.88;
+    transform: scale(1.03);
+  }
+}
+
+.topper-hero-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 152%;
+  height: 152%;
+  max-width: none;
+  max-height: none;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  object-position: center center;
+  filter: brightness(1.28) saturate(1.45) contrast(1.08) drop-shadow(0 0 28px rgba(255, 140, 0, 0.85));
+  pointer-events: none;
+}
+
+.topper-fire-front {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 55%, rgba(255, 200, 80, 0.45) 0%, transparent 62%),
+    linear-gradient(0deg, rgba(255, 100, 0, 0.35) 0%, transparent 40%);
+  mix-blend-mode: screen;
+  animation: topperFireFlicker 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes topperFireFlicker {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  40% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.85;
+  }
+}
+
+.topper-ember-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background:
+    radial-gradient(circle at 30% 65%, rgba(255, 180, 0, 0.55) 0%, transparent 38%),
+    radial-gradient(circle at 70% 60%, rgba(255, 100, 0, 0.45) 0%, transparent 35%),
+    radial-gradient(2px 2px at 22% 35%, #fff8e1 50%, transparent 100%),
+    radial-gradient(2px 2px at 58% 28%, #ffcc80 50%, transparent 100%),
+    radial-gradient(1px 1px at 78% 48%, #fff 50%, transparent 100%);
+  background-size:
+    100% 100%,
+    100% 100%,
+    140px 140px,
+    110px 110px,
+    90px 90px;
+  mix-blend-mode: screen;
+  opacity: 0.65;
+  animation: emberDrift 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes emberDrift {
+  50% {
+    opacity: 0.85;
+    transform: translateY(-3px);
+  }
+}
+
+.topper-fire-layer,
+.topper-hero-bg,
+.topper-monster-hero,
+.topper-brand-strip,
+.portrait-fire-rim,
+.monster-eyes,
+.plaque-universal,
+.plaque-title {
+  display: none;
+}
+
+.topper-fade-to-grave {
+  display: none;
+}
+
+.topper-curve-mask,
+.topper-lightning-bolts,
+.topper-lw-bar,
+.hero-glow,
+.portrait-vignette,
+.topper-plaque {
+  display: none;
+}
+
+/* ── Prize zone：叠在墓地上 ── */
+.prize-zone {
+  position: relative;
+  padding: 0.35rem 0.4rem 0.25rem;
+  overflow: visible;
+  background: transparent;
+}
+
+.prize-graveyard-bg,
+.prize-zone-mist {
+  display: none;
+}
+
+.prize-zone-bezel {
+  position: relative;
+  z-index: 2;
+  padding: 0.35rem 0.4rem 0.45rem;
+  background: rgba(0, 12, 32, 0.06);
+  border: 1px solid rgba(77, 208, 255, 0.28);
+  border-radius: 8px;
+  backdrop-filter: none;
+}
+
+.prize-zone-chrome {
+  height: 3px;
+  margin: 0 0.25rem 0.4rem;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(77, 208, 255, 0.6) 20%,
+    rgba(255, 220, 100, 0.5) 50%,
+    rgba(77, 208, 255, 0.6) 80%,
+    transparent
+  );
+}
+
+.prize-zone-header,
+.prize-zone-title,
+.prize-zone-sub,
+.pyramid-cap {
+  display: none;
+}
+
+/* ── 奖金板：CSS 火焰橙框 + 电击蓝框（仿实机质感） ── */
+.cosmic-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* ── 外框：蓝红霓虹 + 内凹 ── */
+.jackpot-panel {
+  position: relative;
+  padding: 0.45rem 0.5rem 0.5rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #061428 0%, #020810 100%);
+  box-shadow:
+    inset 0 0 40px rgba(0, 60, 140, 0.35),
+    0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.jackpot-panel-neon {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 3px;
+  background: linear-gradient(
+    180deg,
+    #4fc3f7 0%,
+    #1565c0 35%,
+    #c62828 55%,
+    #ff8f00 75%,
+    #4fc3f7 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 6px rgba(79, 195, 247, 0.6));
+}
+
+.jackpot-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+}
+
+.jackpot-row {
+  display: flex;
+  gap: 0.32rem;
+  align-items: stretch;
+}
+
+/* ── 单格：金边 + 火焰内胆 ── */
+.jp-cell {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  clip-path: polygon(2.5% 0, 97.5% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(0 2px 8px rgba(255, 80, 0, 0.45));
+}
+
+.jp-cell--grand {
+  min-height: 4.6rem;
+  clip-path: polygon(1.5% 0, 98.5% 0, 100% 100%, 0 100%);
+}
+
+.jp-cell--super,
+.jp-cell--major {
+  min-height: 2.65rem;
+}
+
+.jp-cell--maxi,
+.jp-cell--minor,
+.jp-cell--mini {
+  min-height: 2.35rem;
+}
+
+.jp-cell-fire {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 110%, #fff176 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 30% 80%, rgba(255, 200, 0, 0.9) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 70% 75%, rgba(255, 120, 0, 0.85) 0%, transparent 50%),
+    linear-gradient(180deg, #ffca28 0%, #ff6f00 28%, #e65100 55%, #6d1b00 88%, #2a0800 100%);
+  animation: jpFireFlicker 2.4s ease-in-out infinite;
+}
+
+.jp-cell-fire::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    105deg,
+    transparent 0,
+    transparent 8px,
+    rgba(255, 255, 255, 0.04) 8px,
+    rgba(255, 255, 255, 0.04) 10px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+}
+
+@keyframes jpFireFlicker {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1.05);
+  }
+  45% {
+    filter: brightness(1.12) saturate(1.15);
+  }
+  70% {
+    filter: brightness(0.96) saturate(1);
+  }
+}
+
+.jp-cell-gold {
+  position: absolute;
+  inset: 3px;
+  border: 2px solid transparent;
+  border-image: linear-gradient(
+      160deg,
+      #fff8e1 0%,
+      #ffd54f 18%,
+      #ff8f00 42%,
+      #5d4037 72%,
+      #ffd54f 100%
+    )
+    1;
+  clip-path: polygon(2% 0, 98% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.jp-cell-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.35rem 0.25rem;
+  text-align: center;
+}
+
+.jp-label {
+  display: block;
+  font-family: var(--font-digital);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: #fff3e0;
+  text-shadow:
+    0 1px 0 #3e2723,
+    0 0 10px rgba(255, 100, 0, 0.95);
+  line-height: 1.15;
+}
+
+.jp-cell--grand .jp-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+}
+
+.jp-amount {
+  display: block;
+  font-family: var(--font-vfd);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+}
+
+.jp-cell--grand .jp-amount {
+  font-size: clamp(1.4rem, 6.8vw, 2.15rem);
+  color: #ffeb3b;
+  text-shadow:
+    0 0 20px rgba(255, 235, 59, 0.9),
+    0 2px 0 #4e342e,
+    0 0 3px #000;
+}
+
+.jp-cell--super .jp-amount,
+.jp-cell--major .jp-amount,
+.jp-cell--maxi .jp-amount,
+.jp-cell--minor .jp-amount {
+  font-size: clamp(0.78rem, 3.4vw, 1.05rem);
+  color: #fff8e1;
+  text-shadow:
+    0 0 12px rgba(255, 200, 80, 0.75),
+    0 1px 0 #3e2723;
+}
+
+.jp-cell--mini .jp-amount {
+  font-size: clamp(0.78rem, 3.4vw, 1.05rem);
+  color: #e3f2fd;
+  text-shadow:
+    0 0 12px rgba(144, 202, 249, 0.85),
+    0 1px 0 #01579b;
+}
+
+.led-digits {
+  font-family: var(--font-vfd) !important;
+}
+
+/* ── 蓝色 3×3 电击格 ── */
+.prize-grid-panel {
+  position: relative;
+  padding: 0.4rem 0.35rem 0.45rem;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(6, 24, 52, 0.75) 0%, rgba(2, 10, 24, 0.85) 100%);
+  box-shadow:
+    inset 0 0 24px rgba(0, 80, 160, 0.25),
+    0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.prize-grid-plate {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 200, 255, 0.25);
+  pointer-events: none;
+}
+
+.prize-grid {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.prize-grid-row {
+  display: flex;
+  gap: 0.26rem;
+  align-items: stretch;
+  min-height: 2.5rem;
+}
+
+.prize-grid-row .board-cell {
+  flex: 1 1 0;
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.board-cell.skew-left .cell-electric-fill,
+.board-cell.skew-left .cell-electric-glow,
+.board-cell.skew-left .cell-electric-rim {
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+}
+
+.board-cell.skew-mid .cell-electric-fill,
+.board-cell.skew-mid .cell-electric-glow,
+.board-cell.skew-mid .cell-electric-rim {
+  clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
+}
+
+.board-cell.skew-right .cell-electric-fill,
+.board-cell.skew-right .cell-electric-glow,
+.board-cell.skew-right .cell-electric-rim {
+  clip-path: polygon(0 0, 90% 0, 100% 100%, 10% 100%);
+}
+
+.cell-electric-fill {
+  position: absolute;
+  inset: 4px 3px;
+  background: linear-gradient(180deg, #0d3a6e 0%, #061a38 45%, #030c1c 100%);
+  box-shadow: inset 0 0 18px rgba(33, 150, 243, 0.35);
+}
+
+.cell-electric-glow {
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(
+    135deg,
+    #81d4fa,
+    #29b6f6,
+    #e1f5fe,
+    #0288d1,
+    #4fc3f7,
+    #b3e5fc
+  );
+  background-size: 300% 300%;
+  animation: electricBorderFlow 3s linear infinite;
+  filter: blur(1px);
+  opacity: 0.95;
+}
+
+.cell-electric-rim {
+  position: absolute;
+  inset: 2px;
+  border: 2px solid rgba(179, 229, 252, 0.85);
+  box-shadow:
+    0 0 10px rgba(79, 195, 247, 0.9),
+    0 0 20px rgba(41, 182, 246, 0.45),
+    inset 0 0 12px rgba(129, 212, 250, 0.25);
+  pointer-events: none;
+  animation: electricRimPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes electricBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+@keyframes electricRimPulse {
+  50% {
+    opacity: 0.75;
+    box-shadow:
+      0 0 14px rgba(129, 212, 250, 1),
+      0 0 28px rgba(41, 182, 246, 0.65),
+      inset 0 0 16px rgba(179, 229, 252, 0.35);
+  }
+}
+
+.board-cell .cell-val {
+  position: relative;
+  z-index: 3;
+  font-family: var(--font-vfd);
+  font-size: clamp(0.7rem, 3vw, 0.95rem);
+  font-weight: 400;
+  color: #fff;
+  text-shadow:
+    0 1px 0 rgba(0, 30, 60, 1),
+    0 0 12px rgba(179, 229, 252, 0.9),
+    0 0 4px #fff;
+  line-height: 1;
+}
+
+.board-cell .mult {
+  position: absolute;
+  top: 12%;
+  right: 14%;
+  z-index: 4;
+  font-size: 0.58rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #fff59d;
+  text-shadow:
+    0 0 8px rgba(255, 235, 59, 1),
+    0 1px 0 #f57f17;
+}
+
+.board-cell.powered .cell-electric-rim {
+  border-color: #fff59d;
+  box-shadow:
+    0 0 12px rgba(255, 235, 59, 0.9),
+    0 0 22px rgba(255, 193, 7, 0.5),
+    inset 0 0 14px rgba(255, 248, 225, 0.3);
+}
+
+.board-cell.board-hit {
+  z-index: 5;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 16px rgba(179, 229, 252, 1));
+}
+
+.board-cell.board-hit .cell-electric-glow {
+  animation-duration: 0.8s;
+  opacity: 1;
+}
+
+.board-cell.board-hit .cell-val {
+  text-shadow:
+    0 0 18px #fff,
+    0 0 32px var(--electric-bright);
+}
+
+/* 旧贴图 / 金字塔 */
+.ladder-grand,
+.ladder-tier,
+.ladder-pill,
+.jackpot-slot,
+.pyramid-frame,
+.prize-pyramid,
+.py-row,
+.cell-bezel,
+.cell-glow {
+  display: none;
+}
+
+/* ── 转轮区：叠在同一墓地上 ── */
+.game-stage {
+  position: relative;
+  margin: 0.2rem 0.45rem 0.5rem;
+  padding: 0.35rem 0.35rem 0.4rem;
+  border-radius: 10px;
+  background: rgba(0, 8, 22, 0.06);
+  border: 2px solid rgba(77, 208, 255, 0.35);
+  box-shadow: 0 0 20px rgba(33, 150, 243, 0.15);
+  overflow: hidden;
+}
+
+.stage-mist {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(0deg, rgba(0, 20, 50, 0.28) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.stage-lightning-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(150, 220, 255, 0.2) 0%, transparent 50%);
+  animation: stageBoltFlash 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes stageBoltFlash {
+  0%,
+  93%,
+  100% {
+    opacity: 0;
+  }
+  94%,
+  96% {
+    opacity: 0.6;
+  }
+}
+
+.stage-arch {
+  display: none;
+}
+
+.stage-moon {
+  position: absolute;
+  top: 12%;
+  right: 8%;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffde7, #b39ddb 60%, transparent 70%);
+  box-shadow: 0 0 20px rgba(200, 180, 255, 0.4);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.stage-graveyard,
+.stage-mist,
+.stage-lightning-flash {
+  display: none;
+}
+
+.stage-rim {
+  display: none;
+}
+
+.reels-wrap {
+  border: 3px solid #42a5f5;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.65),
+    0 0 22px rgba(33, 150, 243, 0.4);
+  background: rgba(0, 4, 12, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.reel-column {
+  position: relative;
+  background: rgba(0, 8, 20, 0.75);
+  border-left: 2px solid rgba(60, 100, 140, 0.35);
+  border-right: 2px solid rgba(20, 40, 60, 0.5);
+}
+
+.reel-column:first-child {
+  border-left: none;
+}
+
+.reel-column:last-child {
+  border-right: none;
+}
+
+.reel-column::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(77, 208, 255, 0.2), transparent);
+  pointer-events: none;
+}
+
+/* ── Button deck / HUD 实机风格 ── */
+.button-deck {
+  margin: 0 0.5rem 0.35rem;
+  border: 3px solid #3a5a80;
+  background: linear-gradient(180deg, #101828 0%, #060a12 100%);
+}
+
+.hud-bar {
+  border: 3px solid #1a2838;
+  background: #000;
+}
+
+.hud-panel {
+  border: 2px solid #2a3a50;
+  background: linear-gradient(180deg, #0c1018 0%, #000 100%);
+}
+
+.hud-panel.featured {
+  border-color: #1565c0;
+  background: linear-gradient(180deg, #0a2040 0%, #020608 100%);
+}
+
+.hud-label {
+  color: #5a7a9a;
+  font-size: 0.44rem;
+  letter-spacing: 0.14em;
+}
+
+.hud-value {
+  font-family: var(--font-vfd);
+  font-size: 1.1rem;
+  color: #ffee58;
+}
+
+.hud-panel.featured .hud-value {
+  font-size: 1.35rem;
+  color: #80deea;
+  text-shadow: 0 0 12px rgba(128, 222, 234, 0.6);
+}
+
+.spin-btn {
+  font-size: 1.65rem;
+  padding: 0.85rem;
+  background: linear-gradient(180deg, #81d4fa 0%, #039be5 50%, #01579b 100%);
+  border: 2px solid #4fc3f7;
+}
+
+.demo-badge {
+  font-size: 0.7rem;
+  padding: 3px 14px;
+  border-width: 2px;
+  background: rgba(0, 0, 0, 0.85);
+  letter-spacing: 0.2em;
+}
+
+.cabinet-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0.35rem 0.5rem 0.5rem;
+  background: #020408;
+  border-top: 1px solid #1a2838;
+}
+
+.footer-universal {
+  font-family: var(--font-digital);
+  font-size: 0.4rem;
+  letter-spacing: 0.2em;
+  color: rgba(150, 170, 200, 0.45);
+}
+
+.footer-demo {
+  font-size: 0.38rem;
+  letter-spacing: 0.12em;
+  color: rgba(100, 120, 150, 0.35);
+}
+
+.cosmic-fiber {
+  width: 20px;
+  top: 6%;
+  bottom: 10%;
+  border-radius: 10px;
+  background: repeating-linear-gradient(
+    180deg,
+    #81d4fa 0 3px,
+    #29b6f6 3px 6px,
+    #01579b 6px 12px,
+    transparent 12px 20px
+  );
+  opacity: 0.9;
+  box-shadow: 0 0 16px rgba(41, 182, 246, 0.6);
+}
+
+/* ── It's Alive 两阶段演出（对齐实机录像） ── */
+
+.reels-wrap.collect-anticipation .reel-electric-frame,
+.reels-wrap.collect-climax .reel-electric-frame {
+  opacity: 1;
+  border-width: 4px;
+  border-color: #b3e5fc;
+  box-shadow:
+    0 0 28px rgba(77, 208, 255, 0.9),
+    0 0 50px rgba(41, 182, 246, 0.5),
+    inset 0 0 24px rgba(77, 208, 255, 0.35);
+  animation: frameFlickerIntense 0.08s steps(2) infinite;
+}
+
+@keyframes frameFlickerIntense {
+  50% {
+    opacity: 0.85;
+    filter: brightness(1.4);
+  }
+}
+
+.reels-wrap.collect-anticipation .reels {
+  filter: brightness(0.72) saturate(0.88);
+}
+
+.reels-wrap.collect-anticipation .reel-column[data-reel="0"],
+.reels-wrap.collect-dim .reel-column[data-reel="0"] {
+  filter: brightness(1.25) saturate(1.1);
+  z-index: 2;
+}
+
+/* It's Alive 期待：后面几列转更久，第 5 轴最慢 */
+.reels.spin-alive-tease .reel-column.reel-pending-tease .reel-window {
+  box-shadow: inset 0 0 12px rgba(77, 208, 255, 0.15);
+}
+
+.reels-wrap.collect-anticipation .reel-column.reel-anticipation-spin .reel-window,
+.reels.spin-alive-tease .reel-column.reel-anticipation-spin .reel-window {
+  animation: reelAnticipationGlow 0.5s ease-in-out infinite alternate;
+}
+
+.reel-column.reel-tease .reel-window {
+  animation: reelTeasePulse 0.26s ease-in-out infinite;
+  box-shadow:
+    0 0 24px rgba(129, 212, 250, 0.75),
+    inset 0 0 20px rgba(41, 182, 246, 0.35);
+}
+
+.reel-column.reel-tease--final {
+  z-index: 5;
+}
+
+.reel-column.reel-tease--final .reel-window {
+  border: 2px solid rgba(179, 229, 252, 0.85);
+  animation: reelFinalTease 0.22s steps(2) infinite;
+}
+
+@keyframes reelAnticipationGlow {
+  from {
+    box-shadow: inset 0 0 10px rgba(77, 208, 255, 0.2);
+  }
+  to {
+    box-shadow:
+      inset 0 0 22px rgba(129, 212, 250, 0.55),
+      0 0 16px rgba(41, 182, 246, 0.45);
+  }
+}
+
+@keyframes reelTeasePulse {
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes reelFinalTease {
+  50% {
+    border-color: #e1f5fe;
+    filter: brightness(1.35) saturate(1.2);
+  }
+}
+
+.reel-column.alive-column .reel-window {
+  box-shadow:
+    0 0 20px rgba(77, 208, 255, 0.7),
+    inset 0 0 16px rgba(77, 208, 255, 0.25);
+  animation: aliveColumnPulse 0.35s ease-in-out infinite;
+}
+
+@keyframes aliveColumnPulse {
+  50% {
+    box-shadow:
+      0 0 32px rgba(150, 230, 255, 0.95),
+      inset 0 0 22px rgba(77, 208, 255, 0.4);
+  }
+}
+
+.symbol.alive.alive-shake {
+  animation: aliveSymbolShake 0.1s linear infinite;
+}
+
+@keyframes aliveSymbolShake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-2px, 1px) rotate(-1.5deg);
+  }
+  75% {
+    transform: translate(2px, -1px) rotate(1.5deg);
+  }
+}
+
+.symbol.alive.alive-pulse {
+  box-shadow:
+    inset 0 0 24px rgba(77, 208, 255, 0.7),
+    0 0 16px rgba(77, 208, 255, 0.6);
+}
+
+/* 默认：火焰怪物 PNG（高清素材，少叠滤镜） */
+.symbol.monster .symbol-img {
+  filter: brightness(1.05) contrast(1.04);
+  transition:
+    filter 0.45s ease,
+    transform 0.35s ease;
+}
+
+/* 第 1 列 It's Alive：全部怪物头像变蓝（电击） */
+.symbol.monster.monster-electrified .symbol-img,
+.reels-wrap.collect-anticipation .symbol.monster .symbol-img,
+.reels-wrap.collect-climax .symbol.monster .symbol-img {
+  filter:
+    brightness(1.25)
+    saturate(1.65)
+    hue-rotate(148deg)
+    contrast(1.1)
+    drop-shadow(0 0 10px #4fc3f7)
+    drop-shadow(0 0 22px #81d4fa)
+    drop-shadow(0 0 36px rgba(41, 182, 246, 0.75));
+  transform: scale(1.06);
+}
+
+.symbol.monster.monster-electrified::after,
+.reels-wrap.collect-anticipation .symbol.monster::after,
+.reels-wrap.collect-climax .symbol.monster::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 6px;
+  pointer-events: none;
+  box-shadow: inset 0 0 18px rgba(129, 212, 250, 0.45);
+  animation: monsterArc 0.25s steps(2) infinite;
+}
+
+@keyframes monsterArc {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.symbol.monster.monster-ignite .symbol-img {
+  transform: scale(1.18);
+  filter:
+    brightness(1.4)
+    saturate(1.8)
+    hue-rotate(148deg)
+    drop-shadow(0 0 16px #4fc3f7)
+    drop-shadow(0 0 30px #e1f5fe);
+}
+
+.symbol.monster.monster-ignite {
+  z-index: 4;
+}
+
+.symbol.monster.monster-collecting {
+  animation: monsterZapIntense 0.35s ease 3;
+}
+
+.symbol.monster.monster-collecting .symbol-img {
+  transform: scale(1.26);
+}
+
+@keyframes monsterZapIntense {
+  50% {
+    transform: scale(1.32);
+    filter: brightness(1.5) saturate(1.5) hue-rotate(155deg) drop-shadow(0 0 24px #81d4fa);
+  }
+}
+
+.cabinet.collect-climax-active .cabinet-bezel {
+  animation: cabinetClimax 0.12s steps(2) 8;
+}
+
+@keyframes cabinetClimax {
+  50% {
+    box-shadow: inset 0 0 80px rgba(120, 220, 255, 0.35);
+  }
+}
+
+.cabinet-vfx-overlay.climax-phase {
+  background: radial-gradient(
+    ellipse at 50% 60%,
+    rgba(77, 208, 255, 0.12) 0%,
+    transparent 55%
+  );
+}
+
+.lightning-bolt.intense {
+  stroke: #fff;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 14px #29b6f6) drop-shadow(0 0 24px #e1f5fe);
+}
+
+.screen-flash--strong.on {
+  background: rgba(200, 240, 255, 0.45);
+}
+
+.board-cell.board-hit {
+  animation: boardHitPulse 0.5s ease;
+}
+
+@keyframes boardHitPulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
