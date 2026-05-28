@@ -5,7 +5,14 @@ import { BET_OPTIONS, FREE_GAME_ROWS, REEL_STRIPS } from "./game/config";
 import { blankCreditValues } from "./game/creditValues";
 import { ensureSymbolImagesReady } from "./ui/symbolRender";
 import { createGameState, spin } from "./game/slotEngine";
-import { tickJackpots } from "./game/prizeBoard";
+import {
+  getJackpotDisplay,
+  resetJackpotsForBet,
+  syncPrizeBoardToBet,
+  tickGrandJackpot,
+  tickSuperMajorJackpots,
+} from "./game/prizeBoard";
+import { GRAND_TICK_INTERVAL_MS, SUPER_MAJOR_TICK_INTERVAL_MS } from "./game/betDisplay";
 import type { SpinResult, SymbolId } from "./game/types";
 import { formatDollars, formatDollarsExact } from "./ui/format";
 import { shouldPlayAliveAnticipation } from "./ui/collectPhase";
@@ -38,7 +45,7 @@ import {
 
 const state = createGameState();
 let spinning = false;
-let jackpots = tickJackpots();
+let jackpots = getJackpotDisplay(state.bet);
 let lastGrid: SymbolId[][] | null = null;
 let lastCreditValues: (number | null)[][] | null = null;
 
@@ -123,7 +130,8 @@ function preloadPublicImages(urls: string[]): void {
 function renderLadder(): void {
   const el = document.getElementById("ladder-section");
   if (!el) return;
-  el.innerHTML = renderPrizePyramid(state.prizeBoard, state.bet, jackpots);
+  jackpots = getJackpotDisplay(state.bet);
+  el.innerHTML = renderPrizePyramid(state.prizeBoard, jackpots);
 }
 
 function renderReelsPlaceholder(): void {
@@ -165,7 +173,8 @@ function bindEvents(): void {
   document.getElementById("reset-btn")?.addEventListener("click", () => {
     const fresh = createGameState();
     Object.assign(state, fresh);
-    state.bet = BET_OPTIONS[1] ?? 25;
+    state.bet = BET_OPTIONS[0]!;
+    resetJackpotsForBet(state.bet);
     renderApp();
     setMessages(["钱包已重置。"]);
   });
@@ -179,6 +188,8 @@ function bindEvents(): void {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(".bet-opt");
     if (!btn || spinning) return;
     state.bet = Number(btn.dataset.bet);
+    syncPrizeBoardToBet(state.prizeBoard, state.bet);
+    resetJackpotsForBet(state.bet);
     renderLadder();
     document.querySelectorAll(".bet-opt").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
@@ -279,19 +290,21 @@ async function doSpin(): Promise<void> {
   document.getElementById("spin-btn")?.removeAttribute("disabled");
 }
 
+/** GRAND：每秒 +$0.45–$0.98 */
 setInterval(() => {
-  jackpots = tickJackpots();
-  const set = (id: string, v: number) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = formatDollars(v);
-  };
-  set("jp-grand", jackpots.grand);
-  set("jp-super", jackpots.major * 0.8);
-  set("jp-major", jackpots.major);
-  set("jp-maxi", jackpots.minor * 1.5);
-  set("jp-minor", jackpots.minor);
-  set("jp-mini", jackpots.mini);
-}, 2200);
+  const grandEl = document.getElementById("jp-grand");
+  if (grandEl) grandEl.textContent = formatDollarsExact(tickGrandJackpot(state.bet));
+}, GRAND_TICK_INTERVAL_MS);
+
+/** SUPER / MAJOR：每 2 秒各 +$0.09 */
+setInterval(() => {
+  const jp = tickSuperMajorJackpots(state.bet);
+  const superEl = document.getElementById("jp-super");
+  const majorEl = document.getElementById("jp-major");
+  if (superEl) superEl.textContent = formatDollarsExact(jp.super);
+  if (majorEl) majorEl.textContent = formatDollarsExact(jp.major);
+  jackpots = getJackpotDisplay(state.bet);
+}, SUPER_MAJOR_TICK_INTERVAL_MS);
 
 const GRAVEYARD_BG_URL = publicUrl("bg/graveyard-scenery.png?v=5");
 document.documentElement.style.setProperty(

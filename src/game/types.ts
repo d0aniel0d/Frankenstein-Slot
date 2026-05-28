@@ -40,9 +40,10 @@ export type VfxCommand =
   | { action: "HIGHLIGHT_CELL"; pos: GridPos; kind: "frankenstein" | "alive" };
 
 export interface PrizeCell {
-  baseCredits: number;
+  /** 当前赌注档位下的格面额（美元） */
+  baseDollars: number;
   multiplier: number;
-  label: "credit" | "mini" | "minor" | "major";
+  label: "credit";
 }
 
 export interface SpinResult {

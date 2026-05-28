@@ -1,13 +1,34 @@
-import { BOARD_BASE_VALUES, BOARD_JACKPOT_AS_BET_MULT, BOARD_SEED_MULTS, BOARD_SEED_MULT_CHANCE, JACKPOT_SEEDS, POWER_UP_CELL_COUNT, POWER_UP_MULTS } from "./mathConfig";
+import {
+  BET_OPTIONS,
+  BOARD_CELL_WEIGHTS,
+  GRAND_TICK_PER_SECOND_MAX,
+  GRAND_TICK_PER_SECOND_MIN,
+  SUPER_MAJOR_TICK_AMOUNT,
+  getBetTier,
+  normalizeBet,
+} from "./betDisplay";
+import type { JackpotDisplay } from "./betDisplay";
+import { BOARD_SEED_MULTS, BOARD_SEED_MULT_CHANCE, POWER_UP_CELL_COUNT, POWER_UP_MULTS } from "./mathConfig";
 import type { PrizeCell } from "./types";
 import { pick, pickWeighted, randomInt } from "./rng";
 
-export function createInitialBoard(): PrizeCell[] {
-  return BOARD_BASE_VALUES.map((v) => ({
-    baseCredits: v.credits,
+export type { JackpotDisplay };
+
+export function createInitialBoard(bet: number): PrizeCell[] {
+  const tier = getBetTier(bet);
+  return tier.boardDollars.map((dollars) => ({
+    baseDollars: dollars,
     multiplier: 1,
-    label: v.label,
+    label: "credit" as const,
   }));
+}
+
+export function syncPrizeBoardToBet(board: PrizeCell[], bet: number): void {
+  const dollars = getBetTier(bet).boardDollars;
+  for (let i = 0; i < board.length; i++) {
+    board[i]!.baseDollars = dollars[i]!;
+    board[i]!.multiplier = 1;
+  }
 }
 
 export function applyPowerUp(board: PrizeCell[]): boolean {
@@ -31,37 +52,99 @@ export function resetBoardMultipliers(board: PrizeCell[]): void {
   }
 }
 
-export function cellPayout(cell: PrizeCell, bet: number): number {
-  const mult = cell.baseCredits * cell.multiplier;
-  if (cell.label === "credit") return mult * bet;
-  if (BOARD_JACKPOT_AS_BET_MULT) {
-    return mult * bet;
-  }
-  if (cell.label === "mini") return JACKPOT_SEEDS.mini * cell.multiplier;
-  if (cell.label === "minor") return JACKPOT_SEEDS.minor * cell.multiplier;
-  return JACKPOT_SEEDS.major * cell.multiplier;
+export function cellPayout(cell: PrizeCell): number {
+  return Math.round(cell.baseDollars * cell.multiplier * 100) / 100;
 }
 
 /** 按权重抽奖金板格子（偏低付） */
 export function awardMonsterFromBoard(
   board: PrizeCell[],
-  bet: number
+  _bet: number
 ): { payout: number; cellIndex: number } {
-  const items = BOARD_BASE_VALUES.map((def, i) => ({
+  const items = BOARD_CELL_WEIGHTS.map((weight, i) => ({
     value: i,
-    weight: def.weight,
+    weight,
   }));
   const idx = pickWeighted(items);
   const cell = board[idx]!;
-  return { payout: cellPayout(cell, bet), cellIndex: idx };
+  return { payout: cellPayout(cell), cellIndex: idx };
 }
 
-export function tickJackpots(): typeof JACKPOT_SEEDS {
+const grandByBet = new Map<number, number>();
+const superByBet = new Map<number, number>();
+const majorByBet = new Map<number, number>();
+
+function roundMoney(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
+/** 切换赌注或重置时，恢复该档位的 GRAND / SUPER / MAJOR 起点 */
+export function resetJackpotsForBet(bet: number): void {
+  const tier = getBetTier(bet);
+  const key = normalizeBet(bet);
+  grandByBet.set(key, tier.jackpots.grandStart);
+  superByBet.set(key, tier.jackpots.super);
+  majorByBet.set(key, tier.jackpots.major);
+}
+
+/** @deprecated 使用 resetJackpotsForBet */
+export function resetGrandForBet(bet: number): void {
+  resetJackpotsForBet(bet);
+}
+
+/** GRAND：每秒 +$0.45–$0.98 */
+export function tickGrandJackpot(bet: number): number {
+  const tier = getBetTier(bet);
+  const key = normalizeBet(bet);
+  let value = grandByBet.get(key) ?? tier.jackpots.grandStart;
+  value +=
+    GRAND_TICK_PER_SECOND_MIN +
+    Math.random() * (GRAND_TICK_PER_SECOND_MAX - GRAND_TICK_PER_SECOND_MIN);
+  if (value >= tier.grandRollCap) {
+    value = tier.jackpots.grandStart + Math.random() * 2;
+  }
+  value = roundMoney(value);
+  grandByBet.set(key, value);
+  return value;
+}
+
+/** SUPER / MAJOR：每 2 秒各 +$0.09 */
+export function tickSuperMajorJackpots(bet: number): { super: number; major: number } {
+  const tier = getBetTier(bet);
+  const key = normalizeBet(bet);
+  let superVal = superByBet.get(key) ?? tier.jackpots.super;
+  let majorVal = majorByBet.get(key) ?? tier.jackpots.major;
+  superVal = roundMoney(superVal + SUPER_MAJOR_TICK_AMOUNT);
+  majorVal = roundMoney(majorVal + SUPER_MAJOR_TICK_AMOUNT);
+  superByBet.set(key, superVal);
+  majorByBet.set(key, majorVal);
+  return { super: superVal, major: majorVal };
+}
+
+export function getGrandJackpot(bet: number): number {
+  const key = normalizeBet(bet);
+  return grandByBet.get(key) ?? getBetTier(bet).jackpots.grandStart;
+}
+
+function getProgressiveSuperMajor(bet: number): { super: number; major: number } {
+  const tier = getBetTier(bet);
+  const key = normalizeBet(bet);
   return {
-    grand: JACKPOT_SEEDS.grand + Math.random() * 50,
-    major: JACKPOT_SEEDS.major + Math.random() * 5,
-    minor: JACKPOT_SEEDS.minor + Math.random() * 2,
-    mini: JACKPOT_SEEDS.mini + Math.random() * 0.5,
+    super: superByBet.get(key) ?? tier.jackpots.super,
+    major: majorByBet.get(key) ?? tier.jackpots.major,
+  };
+}
+
+export function getJackpotDisplay(bet: number): JackpotDisplay {
+  const tier = getBetTier(bet);
+  const prog = getProgressiveSuperMajor(bet);
+  return {
+    grand: getGrandJackpot(bet),
+    super: prog.super,
+    major: prog.major,
+    maxi: tier.jackpots.maxi,
+    minor: tier.jackpots.minor,
+    mini: tier.jackpots.mini,
   };
 }
 
@@ -71,4 +154,8 @@ export function seedRandomMultipliers(board: PrizeCell[]): void {
       cell.multiplier = pick([...BOARD_SEED_MULTS]);
     }
   }
+}
+
+for (const b of BET_OPTIONS) {
+  resetJackpotsForBet(b);
 }

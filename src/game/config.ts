@@ -1,7 +1,8 @@
 import type { SymbolDef, SymbolId } from "./types";
 
 export const STARTING_BALANCE = 10_000;
-export const BET_OPTIONS = [10, 25, 50, 100, 250];
+export { BET_OPTIONS } from "./betDisplay";
+export type { BetAmount } from "./betDisplay";
 export const REELS = 5;
 export const ROWS = 3;
 export const FREE_GAME_ROWS = 5;
@@ -24,7 +25,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
   wild: { id: "wild", label: "WILD", emoji: "✨", isFrankenstein: false },
 };
 
-export { BOARD_BASE_VALUES, JACKPOT_SEEDS, LINE_PAY, PAYLINES, SPIN_HOLD_PERCENT } from "./mathConfig";
+export { LINE_PAY, PAYLINES, SPIN_HOLD_PERCENT } from "./mathConfig";
 
 /** 转轮条：alive / monster 极少，多数为低付符号 */
 export const REEL_STRIPS: SymbolId[][] = [

@@ -1,4 +1,5 @@
 import {
+  BET_OPTIONS,
   FREE_GAME_ROWS,
   LINE_PAY,
   PAYLINES,
@@ -88,11 +89,12 @@ function reelHas(grid: SymbolId[][], reel: number, id: SymbolId): boolean {
 }
 
 export function createGameState(): GameState {
-  const board = createInitialBoard();
+  const defaultBet = BET_OPTIONS[0]!;
+  const board = createInitialBoard(defaultBet);
   seedRandomMultipliers(board);
   return {
     balance: 10_000,
-    bet: 25,
+    bet: defaultBet,
     lastWin: 0,
     prizeBoard: board,
     boardPowered: false,
