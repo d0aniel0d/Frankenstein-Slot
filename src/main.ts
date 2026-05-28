@@ -1,11 +1,6 @@
 import "./styles.css";
 import "./cosmic-cabinet.css";
 import { publicUrl } from "./publicUrl";
-
-document.documentElement.style.setProperty(
-  "--cabinet-graveyard-bg",
-  `url(${publicUrl("bg/graveyard-scenery.png?v=4")})`
-);
 import { BET_OPTIONS, FREE_GAME_ROWS, REEL_STRIPS } from "./game/config";
 import { blankCreditValues } from "./game/creditValues";
 import { ensureSymbolImagesReady } from "./ui/symbolRender";
@@ -28,7 +23,9 @@ import {
   renderPrizeZoneShell,
   renderSceneryZoneClose,
   renderSceneryZoneOpen,
+  bindTopperPortrait,
   renderTopper,
+  topperPortraitUrl,
 } from "./ui/cabinetChrome";
 import { renderPrizePyramid } from "./ui/prizeBoardLayout";
 import { mountReels, playSpinAnimation } from "./ui/reelAnimator";
@@ -110,6 +107,17 @@ function renderApp(): void {
   renderReelsPlaceholder();
   renderBetPicker();
   bindEvents();
+  bindTopperPortrait(app);
+}
+
+function preloadPublicImages(urls: string[]): void {
+  for (const href of urls) {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = href;
+    document.head.appendChild(link);
+  }
 }
 
 function renderLadder(): void {
@@ -284,6 +292,18 @@ setInterval(() => {
   set("jp-minor", jackpots.minor);
   set("jp-mini", jackpots.mini);
 }, 2200);
+
+const GRAVEYARD_BG_URL = publicUrl("bg/graveyard-scenery.png?v=5");
+document.documentElement.style.setProperty(
+  "--cabinet-graveyard-bg",
+  `url(${GRAVEYARD_BG_URL})`
+);
+preloadPublicImages([
+  topperPortraitUrl(),
+  GRAVEYARD_BG_URL,
+  publicUrl("symbols/monster.png?v=8"),
+  publicUrl("symbols/dr_frank.png?v=8"),
+]);
 
 renderApp();
 void ensureSymbolImagesReady(REEL_STRIPS.flat());

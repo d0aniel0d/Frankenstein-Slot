@@ -14,7 +14,7 @@ export function isSymbolPngReady(id: SymbolId): boolean {
   return !!img && img.naturalWidth > 0;
 }
 
-function loadSymbolPng(id: SymbolId): Promise<void> {
+function loadSymbolPng(id: SymbolId, attempt = 0): Promise<void> {
   if (failedImages.has(id)) return Promise.resolve();
   const url = getSymbolMediaUrl(id);
   if (!url) return Promise.resolve();
@@ -24,17 +24,22 @@ function loadSymbolPng(id: SymbolId): Promise<void> {
 
   return new Promise((resolve) => {
     const img = new Image();
-    img.decoding = "sync";
     img.onload = () => {
+      failedImages.delete(id);
       pngCache.set(id, img);
       resolve();
     };
     img.onerror = () => {
+      if (attempt < 1) {
+        pngCache.delete(id);
+        void loadSymbolPng(id, attempt + 1).then(resolve);
+        return;
+      }
       failedImages.add(id);
       pngCache.delete(id);
       resolve();
     };
-    img.src = url;
+    img.src = attempt > 0 ? (getSymbolMediaUrl(id) ?? url) : url;
   });
 }
 
@@ -61,7 +66,7 @@ export function symbolInnerHtml(id: SymbolId): string {
   const url = getSymbolMediaUrl(id);
   if (!url) return svgFallbackHtml(id);
 
-  return `<img class="symbol-img" src="${url}" alt="" data-fallback="${id}" decoding="sync" fetchpriority="high" />`;
+  return `<img class="symbol-img" src="${url}" alt="" data-fallback="${id}" loading="eager" decoding="async" fetchpriority="high" />`;
 }
 
 export function spinSymbolCellHtml(id: SymbolId): string {

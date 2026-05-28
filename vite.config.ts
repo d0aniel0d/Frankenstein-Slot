@@ -11,4 +11,23 @@ export default defineConfig({
   root: ".",
   publicDir: "public",
   base,
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name]-[hash][extname]",
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+      },
+    },
+  },
+  plugins: [
+    {
+      name: "inject-pages-base",
+      transformIndexHtml(html) {
+        const href = base.endsWith("/") ? base : `${base}/`;
+        if (html.includes("<base ")) return html;
+        return html.replace("<head>", `<head>\n    <base href="${href}" />`);
+      },
+    },
+  ],
 });

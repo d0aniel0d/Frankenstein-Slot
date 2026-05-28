@@ -1,18 +1,40 @@
 import { publicUrl } from "../publicUrl";
 
 /** Cosmic 竖屏：顶屏（上） + 墓地全景（中下） */
-const BG_ASSET_V = "5";
+const BG_ASSET_V = "6";
+
+export function topperPortraitUrl(): string {
+  return publicUrl(`bg/topper-portrait.png?v=${BG_ASSET_V}`);
+}
+
+export function bindTopperPortrait(root: ParentNode = document): void {
+  const img = root.querySelector<HTMLImageElement>(".topper-hero-img");
+  if (!img || img.dataset.bound) return;
+  img.dataset.bound = "1";
+  const url = topperPortraitUrl();
+  img.src = url;
+  img.loading = "eager";
+  img.addEventListener(
+    "error",
+    () => {
+      if (img.src !== url) img.src = url;
+    },
+    { once: true }
+  );
+}
 
 export function renderTopper(): string {
+  const portraitSrc = topperPortraitUrl();
   return `
     <header class="topper" aria-label="Frankenstein topper">
       <div class="topper-fire-back" aria-hidden="true"></div>
       <img
         class="topper-hero-img"
-        src="${publicUrl(`bg/topper-portrait.png?v=${BG_ASSET_V}`)}"
+        src="${portraitSrc}"
         alt="Frankenstein portrait"
         width="1024"
         height="1001"
+        loading="eager"
         decoding="async"
       />
       <div class="topper-fire-front" aria-hidden="true"></div>

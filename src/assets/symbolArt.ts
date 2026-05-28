@@ -139,8 +139,26 @@ export function getSymbolSvg(id: SymbolId): string {
   return ART[id];
 }
 
-const SYMBOL_ASSET_VERSION = "7";
+const SYMBOL_ASSET_VERSION = "8";
+
+/** 仅这些符号有 public/symbols/*.png（避免 404 后永久退回 SVG） */
+const SYMBOL_PNG_IDS = new Set<SymbolId>([
+  "neon_a",
+  "neon_j",
+  "neon_q",
+  "neon_k",
+  "daisy",
+  "brain",
+  "castle",
+  "assistant",
+  "monster",
+  "dr_frank",
+  "alive",
+  "power",
+  "free_games",
+]);
 
 export function getSymbolMediaUrl(id: SymbolId): string | null {
+  if (!SYMBOL_PNG_IDS.has(id)) return null;
   return publicUrl(`symbols/${id}.png?v=${SYMBOL_ASSET_VERSION}`);
 }
