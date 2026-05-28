@@ -62,7 +62,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url("/bg/graveyard-scenery.png?v=4") center 68% / cover no-repeat;
+  background: var(--cabinet-graveyard-bg) center 68% / cover no-repeat;
   filter: saturate(1.12) brightness(0.98) contrast(1.06);
 }
 

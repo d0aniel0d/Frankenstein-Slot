@@ -1,5 +1,11 @@
 import "./styles.css";
 import "./cosmic-cabinet.css";
+import { publicUrl } from "./publicUrl";
+
+document.documentElement.style.setProperty(
+  "--cabinet-graveyard-bg",
+  `url(${publicUrl("bg/graveyard-scenery.png?v=4")})`
+);
 import { BET_OPTIONS, FREE_GAME_ROWS, REEL_STRIPS } from "./game/config";
 import { blankCreditValues } from "./game/creditValues";
 import { ensureSymbolImagesReady } from "./ui/symbolRender";

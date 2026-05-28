@@ -1,3 +1,5 @@
+import { publicUrl } from "../publicUrl";
+
 /** Cosmic 竖屏：顶屏（上） + 墓地全景（中下） */
 const BG_ASSET_V = "5";
 
@@ -7,7 +9,7 @@ export function renderTopper(): string {
       <div class="topper-fire-back" aria-hidden="true"></div>
       <img
         class="topper-hero-img"
-        src="/bg/topper-portrait.png?v=${BG_ASSET_V}"
+        src="${publicUrl(`bg/topper-portrait.png?v=${BG_ASSET_V}`)}"
         alt="Frankenstein portrait"
         width="1024"
         height="1001"

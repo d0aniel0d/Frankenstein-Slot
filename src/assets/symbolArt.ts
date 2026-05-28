@@ -1,4 +1,5 @@
 import type { SymbolId } from "../game/types";
+import { publicUrl } from "../publicUrl";
 
 const ART: Record<SymbolId, string> = {
   neon_a: neonLetter("A", "#c850ff", "#6a28a8", "#9adbff"),
@@ -141,5 +142,5 @@ export function getSymbolSvg(id: SymbolId): string {
 const SYMBOL_ASSET_VERSION = "7";
 
 export function getSymbolMediaUrl(id: SymbolId): string | null {
-  return `/symbols/${id}.png?v=${SYMBOL_ASSET_VERSION}`;
+  return publicUrl(`symbols/${id}.png?v=${SYMBOL_ASSET_VERSION}`);
 }
